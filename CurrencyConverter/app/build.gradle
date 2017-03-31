@@ -1,0 +1,58 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    defaultConfig {
+        applicationId "com.ranjith.currencyconverter"
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile 'com.google.code.gson:gson:2.7'
+    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
+    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
+
+    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:0.4.0'
+
+    compile "org.jetbrains.anko:anko-sdk15:0.8.3"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    compile "com.google.dagger:dagger:$dagger_version"
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    compile "com.android.support:appcompat-v7:$google_support_library_version"
+    compile "com.android.support:recyclerview-v7:$google_support_library_version"
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.robolectric:robolectric:3.3.2"
+
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+}
+repositories {
+    mavenCentral()
+}
