@@ -12,6 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
+import java.sql.Time
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 
@@ -22,7 +23,13 @@ import javax.inject.Named
     @Provides fun provideContext(): Context = app
 }
 
-@Module class NetworkModule {
+@Module class NetworkModule(var baseUrl: String) {
+
+    @Provides fun provideCacheExpiryMins() = 30
+
+    @Provides fun provideCacheControl(expiryMins: Int) = CacheControl.Builder()
+            .maxAge(expiryMins, TimeUnit.MINUTES)
+            .build()
 
     @Provides fun provideCache(context: Context) : Cache? {
         var cache: Cache? = null
@@ -35,12 +42,6 @@ import javax.inject.Named
         return cache
     }
 
-    @Provides fun provideCacheExpiryMins() = 30
-
-    @Provides fun provideCacheControl(expiryMins: Int) = CacheControl.Builder()
-            .maxAge(expiryMins, TimeUnit.MINUTES)
-            .build()
-
     @Provides fun provideOkHttpClient(cache: Cache?, cacheControl: CacheControl): OkHttpClient {
         return OkHttpClient.Builder()
                 .addNetworkInterceptor {
@@ -51,10 +52,12 @@ import javax.inject.Named
                             .build()
                 }
                 .cache(cache)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
                 .build()
     }
 
-    @Provides fun provideRetrofit( baseUrl: String, okHttpClient: OkHttpClient): Retrofit {
+    @Provides fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -62,13 +65,11 @@ import javax.inject.Named
                 .client(okHttpClient)
                 .build()
     }
-
 }
 
 @Module class FixerModule {
-    @Provides fun provideBaseUrl() = "http://api.fixer.io/"
 
-    @Provides fun provideFixerApi(retrofit : Retrofit) = retrofit.create(FixerApi::class.java)
+    @Provides fun provideFixerApi(retrofit : Retrofit): FixerApi = retrofit.create(FixerApi::class.java)
 
     @Provides fun provideCurrencies() = arrayOf(
             "AUD",
