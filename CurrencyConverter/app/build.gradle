@@ -12,7 +12,7 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.ranjith.currencyconverter.CustomTestRunner"
     }
     buildTypes {
         release {
@@ -49,9 +49,14 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.robolectric:robolectric:3.3.2"
 
+    androidTestCompile 'com.squareup.okhttp3:mockwebserver:3.6.0'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    androidTestCompile('com.jakewharton.espresso:okhttp3-idling-resource:1.0.0') {
+        exclude group: 'com.android.support'
+    }
 }
 repositories {
     mavenCentral()
